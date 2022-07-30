@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.sass'
+import { Component } from 'react'
+import { CardList } from './components/card-list/cardlist'
+import { SearchBox } from './components/searchbox/searchbox'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      students: [],
+      searchField: '',
+    }
+  }
+
+  componentDidMount() {
+    fetch('https://my-amigos-api.herokuapp.com/students')
+      .then((res) => res.json())
+      .then((user) => this.setState({ students: user }))
+  }
+
+  render() {
+    const { students, searchField } = this.state
+    const filteredStudents = students.filter((student) =>
+      student.name.toLowerCase().includes(searchField.toLowerCase())
+    )
+
+    return (
+      <div className='App'>
+        <h1>Students Rolodex</h1>
+        <SearchBox
+          placeholder={'Search students'}
+          handleChange={(e) => this.setState({ searchField: e.target.value })}
+        />
+        <CardList students={filteredStudents} />
+      </div>
+    )
+  }
 }
 
-export default App;
+export default App
